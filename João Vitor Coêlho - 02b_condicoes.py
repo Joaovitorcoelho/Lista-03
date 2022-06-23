@@ -1,5 +1,7 @@
 # Lista de exercícios - Condições (Adicional)
+from dataclasses import replace
 import math
+from re import M
 
 def situacao_aluno(nota1, nota2, nota3, faltas, aulas_ministradas):
     """
@@ -202,13 +204,19 @@ def converte_hora_24_para_12(horario):
     horas, minutos = horario.split(":")
     horas = int(horas)
 
-    if (horas > 12):
-        horas -= 12
-        horas = str(horas).zfill(2)
+    if  12 == horas :
         return "{}:{} pm".format(horas, minutos)
+    
+    if (horas >= 13):
+        horas -= 12
+        return "{}:{} pm".format(horas, minutos)
+    
+    elif horas == 0:
+        horas += 12
+        return "{}:{} am".format(horas, minutos)
 
     else:
-        return "{} am".format(horario)
+        return "{}:{} am".format(horas, minutos)
         
 def converte_hora_12_para_24(horario):
     """
@@ -224,7 +232,25 @@ def converte_hora_12_para_24(horario):
     Retorna:
         string: horario no formato 24 horas
     """
+    horas, minutoscomperiodo, = horario.split(":")
+    minutos, ampm = minutoscomperiodo.split(" ")
+    horas = int(horas)
 
+    if ampm == "am" and horas == 12:
+        return (f"0{horas - 12}:{minutos}")
+    
+    if ampm == "am" and horas <= 9:
+        return (f"0{horas}:{minutos}")
+
+    if ampm == "am":
+        return (f"{horas}:{minutos}")
+
+    else:
+        if horas < 12:
+            return (f"{horas + 12}:{minutos}")
+        else:
+            return (f"{horas}:{minutos}")
+    
 
 def conta_combustivel(qtde_litros, tipo_combustivel, tipo_pagamento):
     """
@@ -246,7 +272,19 @@ def conta_combustivel(qtde_litros, tipo_combustivel, tipo_pagamento):
     Returns:
         float: o valor a ser pago, com duas casas decimais
     """
-
+    tipo_combustivel = tipo_combustivel.replace("a", "3.159")
+    tipo_combustivel = tipo_combustivel.replace("g", "3.739")
+    tipo_combustivel = tipo_combustivel.replace("d", "3.090")
+    tipo_combustivel = (float(tipo_combustivel))
+    
+    if tipo_pagamento == "d" or tipo_pagamento == "v":
+        tipo_pagamento = tipo_pagamento.replace ("d", "0.1")
+        tipo_pagamento = tipo_pagamento.replace ("v", "0.1")
+        tipo_pagamento = (float(tipo_pagamento))
+        valorcomdesconto = (qtde_litros * tipo_combustivel) * (tipo_pagamento)
+        return round((qtde_litros * tipo_combustivel) - valorcomdesconto, 2)
+    else:
+        return round(qtde_litros * tipo_combustivel, 2)
 
 def comprar_frutas(morango=0, uva=0):
     """
@@ -269,6 +307,29 @@ def comprar_frutas(morango=0, uva=0):
     Retorna:
         float: o preço a pagar, com 2 casas decimais
     """
+    valor_morango = 0
+    valor_uva = 0
+
+    if (morango <= 5):
+        valor_morango = morango * 2.5
+    if (morango > 5):
+        valor_morango = morango * 2.2
+
+    if (uva <= 5):
+        valor_uva = uva * 1.8
+    if (uva > 5):
+        valor_uva = uva * 1.5
+
+    valor_total = valor_morango + valor_uva
+
+    if ((uva + morango) > 8) or (morango > 8) or (uva > 8) or (valor_total > 25):
+        valor_total -= (valor_total * 0.1)
+        return round(valor_total, 2)
+
+    else:
+        return round(valor_total, 2)
+        
+
 
 
 # Área de testes: só mexa aqui se souber o que está fazendo!
